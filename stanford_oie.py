@@ -65,7 +65,8 @@ class StanfordOpenIE:
                  properties_key: str = None,
                  properties: dict = None,
                  simple_format: bool = True,
-                 remove_dup: bool = False):
+                 remove_dup: bool = False,
+                 max_len: int=15000):
         """
         :param (str | unicode) text: raw text for the CoreNLPServer to parse
         :param (str) properties_key: key into properties cache for the client
@@ -73,6 +74,8 @@ class StanfordOpenIE:
         :param (bool) simple_format: whether to return the full format of CoreNLP or a simple dict.
         :return: Depending on simple_format: full or simpler format of triples <subject, relation, object>.
         """
+        if len(text) >= max_len:
+            return []
         # https://stanfordnlp.github.io/CoreNLP/openie.html
         core_nlp_output = self.client.annotate(text=text, annotators=['openie'], output_format='json',
                                                properties_key=properties_key, properties=properties)
