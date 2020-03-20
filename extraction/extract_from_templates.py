@@ -93,7 +93,7 @@ if __name__ == "__main__":
   for temp_d, temp_rex, temp_rec, oie_rex, oie_rec in zip(temp_data, temp_regexes, temp_recounts, oie_regexes, oie_recounts):
     if temp_rex:
       print(f'------- {temp_d[1]} regex results')
-      res = sorted(list(temp_rec.items()), key=lambda x: -len(x))
+      res = sorted(list(temp_rec.items()), key=lambda x: -len(x[1]))
       for k, v in res:
         l = len(v)
         files = ' '.join([f'{args.text_files[fid]}:{lid}' for (fid,lid) in v])
@@ -101,7 +101,7 @@ if __name__ == "__main__":
       print()
     if oie_rex:
       print(f'------- {temp_d[1]} regex results')
-      res = sorted(list(oie_rec.items()), key=lambda x: -len(x))
+      res = sorted(list(oie_rec.items()), key=lambda x: -len(x[1]))
       for k, v in res:
         l = len(v)
         files = ' '.join([f'{args.oie_files[fid]}:{lid}' for (fid,lid) in v])
