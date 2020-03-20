@@ -1,6 +1,7 @@
 A place to put cord19 related stuff.
 
-[Datasets doc](https://docs.google.com/spreadsheets/d/1v3NLk_cppHoewQiZb4d4rmYrl6QkUbctntTvpB1X2mk/edit#gid=0)
+* [Datasets doc](https://docs.google.com/spreadsheets/d/1v3NLk_cppHoewQiZb4d4rmYrl6QkUbctntTvpB1X2mk/edit#gid=0)
+* [OIE Templates Doc](https://docs.google.com/spreadsheets/d/1vatC9MtcGl3ukv5xqMR7RqQyj23fOtCyp7Qgpt0n0fI/edit?usp=sharing)
 
 ## Data
 
