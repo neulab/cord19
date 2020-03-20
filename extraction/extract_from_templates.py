@@ -30,7 +30,7 @@ if __name__ == "__main__":
   temp_regexes = []
   v_regex = '('+'|'.join(virus_names)+')'
   for i, my_data in enumerate(temp_data):
-    orig_regexes = my_data[3].split('\n')
+    orig_regexes = my_data[4].split('\n')
     regexes = []
     for x in orig_regexes:
       if x.startswith('[Y]') or x.endswith('[Y]'):
@@ -69,6 +69,6 @@ if __name__ == "__main__":
       print(f'------- {temp_d[1]} regex results')
       res = sorted(list(temp_rec.items()), key=lambda x: -x[1])
       for k, v in res:
-        print(f'{v}\t{k} {temp_d[4]}')
+        print(f'{v}\t{k} {temp_d[5]}')
       print()
 
