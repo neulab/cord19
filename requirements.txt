@@ -1,2 +1,3 @@
 spacy>=2.2.4
 stanford-openie>=1.0.1
+elasticsearch==7.5.1
