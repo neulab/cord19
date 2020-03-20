@@ -1,25 +1,43 @@
 import argparse
 from typing import Dict, List, Set
 import os
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 from tqdm import tqdm
+import spacy
+import string
 from pathlib import Path
 from zipfile import ZipFile
+import numpy as np
 import wget
 os.environ['STANFORD_HOME'] = '/lfs/local/0/xren7/zhengbaj/stanford_home'
 
 
 Span = namedtuple('Span', ['text', 'start', 'end'])
 Triple = namedtuple('Triple', ['subject', 'relation', 'object'])
+punct = set(list(string.punctuation))
+nlp = spacy.load('en_core_web_sm')
+stopwords = nlp.Defaults.stop_words
 
 
 def span_to_str(span: Span):
     return '{}#{},{}'.format(span.text, span.start, span.end)
 
 
+def str_to_span(string: str) -> Span:
+    text, pos = string.rsplit('#', 1)
+    s, e = list(map(int, pos.split(',')))
+    return Span(text, s, e)
+
+
 def triples_to_str(triples: List[Triple]):
     return '\t'.join(map(lambda t: '|||'.join(
         [span_to_str(t.subject), span_to_str(t.relation), span_to_str(t.object)]), triples))
+
+
+def str_to_triples(string: str) -> List[Triple]:
+    if len(string) == 0:
+        return []
+    return [Triple(*[str_to_span(e) for e in t.split('|||')]) for t in string.split('\t')]
 
 
 class StanfordOpenIE:
@@ -96,21 +114,50 @@ class StanfordOpenIE:
             del os.environ['CORENLP_HOME']
 
 
+def filter_relation(relation: str):
+    relation = relation.lower()
+    toks = relation.split()
+    if relation in punct:  # remove punct
+        return False
+    if relation[0] in punct:  # start with punct
+        return False
+    if np.all([w in stopwords for w in toks]):  # all tokens are stopwords
+        return False
+    if len(toks) > 10:  # too long
+        return False
+    return True
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='run open ie on a text file')
+    parser.add_argument('--task', type=str, choices=['run', 'ana'], default='run')
     parser.add_argument('--inp', type=str, help='input file')
     parser.add_argument('--out', type=str, help='output file')
     parser.add_argument('--threads', type=int, help='number of threads for standford nlp', default=5)
     parser.add_argument('--start_server', action='store_true')
     args = parser.parse_args()
 
-    if args.start_server:
-        with StanfordOpenIE(threads=args.threads, close_after_finish=False) as client:
-            client.annotate('dummy test.', remove_dup=True)
-        exit(0)
+    if args.task == 'run':
+        if args.start_server:
+            with StanfordOpenIE(threads=args.threads, close_after_finish=False) as client:
+                client.annotate('dummy test.', remove_dup=True)
+            exit(0)
 
-    with open(args.inp, 'r') as fin, open(args.out, 'w') as fout, \
-            StanfordOpenIE(threads=args.threads, close_after_finish=True) as client:
-        for lid, line in tqdm(enumerate(fin)):
-            triples = client.annotate(line, remove_dup=True)
-            fout.write(triples_to_str(triples) + '\n')
+        with open(args.inp, 'r') as fin, open(args.out, 'w') as fout, \
+                StanfordOpenIE(threads=args.threads, close_after_finish=True) as client:
+            for lid, line in tqdm(enumerate(fin)):
+                triples = client.annotate(line, remove_dup=True)
+                fout.write(triples_to_str(triples) + '\n')
+    elif args.task == 'ana':
+        relation2count = defaultdict(lambda: 0)
+        with open(args.inp, 'r') as fin:
+            for l in fin:
+                for t in str_to_triples(l.rstrip('\n')):
+                    relation2count[t.relation.text] += 1
+        relation2count = list(filter(lambda x: filter_relation(x[0]),
+                                     sorted(relation2count.items(), key=lambda x: -x[1])))
+        print('#relation {}'.format(len(relation2count)))
+        print(relation2count[:5])
+        with open(args.out, 'w') as fout:
+            for r, c in relation2count:
+                fout.write('{}\t{}\n'.format(r, c))
