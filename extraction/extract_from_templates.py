@@ -21,6 +21,8 @@ if __name__ == "__main__":
   parser.add_argument('--tasks', type=int, nargs='+', default=None, help='Which tasks to do (if not specified, all)')
 
   args = parser.parse_args()
+  if args.oie_files and len(args.oie_files) != len(args.text_files):
+    raise ValueError('Lengths of the args.oie_files and args.text_files arguments must be the same')
 
   with open(args.template_file, 'r') as f:
     csvf = csv.reader(f)
@@ -83,8 +85,8 @@ if __name__ == "__main__":
   lines = []
   for file_id, fname in enumerate(args.oie_files if args.oie_files else []):
     print(f'Processing {fname}', file=sys.stderr)
-    with open(fname, 'r') as f:
-      for line_id, line in tqdm.tqdm(enumerate(f)):
+    with open(fname, 'r') as f, open(args.text_files[file_id], 'r') as ft:
+      for line_id, (line, linet) in tqdm.tqdm(enumerate(zip(f, ft))):
         line = re.sub(oie_span_re,'',line)
         for extraction in line.split('\t'):
           for temp_id, (oie_rex, oie_rec) in enumerate(zip(oie_regexes, oie_recounts)):
@@ -92,7 +94,7 @@ if __name__ == "__main__":
               m = re.search(oie_rex, extraction)
               if m:
                 key = extraction.strip().replace('|||', ' ')
-                oie_rec[key].append( (file_id,line_id,line) )
+                oie_rec[key].append( (file_id,line_id,linet) )
 
   if not os.path.exists(args.html_dir):
       os.makedirs(args.html_dir)
