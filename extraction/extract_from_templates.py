@@ -2,6 +2,7 @@ import argparse
 import csv
 import os
 import re
+import shutil
 import sys
 import tqdm
 from collections import defaultdict
@@ -95,21 +96,24 @@ if __name__ == "__main__":
 
   if not os.path.exists(args.html_dir):
       os.makedirs(args.html_dir)
+  shutil.copy2('main.css', f'{args.html_dir}/main.css')
 
   def page_head(title):
-    return f'<html><head><title>{title}</title></head><body><h1>{title}</h1>'
+    return f'<html><head><link rel="stylesheet" type="text/css" href="main.css"><title>{title}</title></head><body><h1>{title}</h1>'
 
   with open(f'{args.html_dir}/index.html', 'w') as findex:
     print(page_head('CORD-19 Information Extraction Report')+'<ul>', file=findex)
     for i, (temp_d, temp_rex, temp_rec, oie_rex, oie_rec) in enumerate(zip(temp_data, temp_regexes, temp_recounts, oie_regexes, oie_recounts)):
       if temp_rex or oie_rex:
         fname = f'report-{i}.html'
-        print(f'<li><a href="{fname}">{temp_d[2]}</a></li>', file=findex)
+        l = (len(temp_rec) if temp_rec else 0) + (len(oie_rec) if oie_rec else 0)
+        print(f'<li><a href="{fname}">{temp_d[2]}</a> ({l} results)</li>', file=findex)
         with open(f'{args.html_dir}/{fname}', 'w') as f:
           print(page_head(temp_d[2]), file=f)
+          print('<p><a href="index.html">&lt;&lt; Back to Top</a></p>', file=f)
           # TODO: Copied code here is not ideal, can we fix?
           if temp_rex:
-            print('<h2>template results</h2><table>', file=f)
+            print('<h2>Textual Template Results</h2><table>', file=f)
             res = sorted(list(temp_rec.items()), key=lambda x: -len(x[1]))
             for k, v in res:
               l = len(v)
@@ -118,7 +122,7 @@ if __name__ == "__main__":
                 print(f'<tr><td colspan=2>{text}</td></tr>', file=f)
             print('</table>', file=f)
           if oie_rex:
-            print('<h2>information extraction results</h2><table>', file=f)
+            print('<h2>Information Extraction Results</h2><table>', file=f)
             res = sorted(list(oie_rec.items()), key=lambda x: -len(x[1]))
             for k, v in res:
               l = len(v)
