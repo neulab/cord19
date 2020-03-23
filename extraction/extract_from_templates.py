@@ -1,5 +1,6 @@
 import argparse
 import csv
+import os
 import re
 import sys
 import tqdm
@@ -15,6 +16,7 @@ if __name__ == "__main__":
   parser.add_argument('--template_file', required=True, type=str, default='cord19-templates.csv', help='input file')
   parser.add_argument('--text_files', type=str, nargs='+', help='Text files')
   parser.add_argument('--oie_files', type=str, nargs='+', help='OpenIE extractions')
+  parser.add_argument('--html_dir', type=str, required=True, help='The directory where we output files')
   parser.add_argument('--tasks', type=int, nargs='+', default=None, help='Which tasks to do (if not specified, all)')
 
   args = parser.parse_args()
@@ -42,8 +44,9 @@ if __name__ == "__main__":
       temp_regexes.append(None)
     else:
       regexes = [x.replace('[X]', v_regex).replace('[Y]', f'(?P<G{i}>.*?)') for (i,x) in enumerate(regexes)]
+      regex_cnt = len(regexes)
       regexes = '('+'|'.join(regexes)+')'
-      temp_regexes.append( (re.compile(regexes), len(regexes), my_data[6]) )
+      temp_regexes.append( (re.compile(regexes), regex_cnt, my_data[6]) )
     # OIE regexes
     regexes = my_data[3].split('\n')
     if not len(regexes) or not len(regexes[0]):
@@ -66,14 +69,14 @@ if __name__ == "__main__":
             temp_rex_re, temp_rex_cnt, temp_rex_type = temp_rex
             m = re.search(temp_rex_re, line)
             if m:
-              if temp_rex_type == 'ydata':
+              if temp_rex_type == 'yonly':
                 vals = [m.group(f'G{i}') for i in range(temp_rex_cnt)]
                 vals = [x for x in vals if x is not None]
                 assert(len(vals) == 1)
                 key = vals[0]
               else:
                 key = m.group(1)
-              temp_rec[key].append( (file_id,line_id) )
+              temp_rec[key].append( (file_id,line_id,line) )
 
   # Process oie
   lines = []
@@ -88,23 +91,40 @@ if __name__ == "__main__":
               m = re.search(oie_rex, extraction)
               if m:
                 key = extraction.strip().replace('|||', ' ')
-                oie_rec[key].append( (file_id,line_id) )
+                oie_rec[key].append( (file_id,line_id,line) )
 
-  for temp_d, temp_rex, temp_rec, oie_rex, oie_rec in zip(temp_data, temp_regexes, temp_recounts, oie_regexes, oie_recounts):
-    if temp_rex:
-      print(f'------- {temp_d[1]} regex results')
-      res = sorted(list(temp_rec.items()), key=lambda x: -len(x[1]))
-      for k, v in res:
-        l = len(v)
-        files = ' '.join([f'{args.text_files[fid]}:{lid}' for (fid,lid) in v])
-        print(f'{l}\t{k} {temp_d[5]}\t{files}')
-      print()
-    if oie_rex:
-      print(f'------- {temp_d[1]} regex results')
-      res = sorted(list(oie_rec.items()), key=lambda x: -len(x[1]))
-      for k, v in res:
-        l = len(v)
-        files = ' '.join([f'{args.oie_files[fid]}:{lid}' for (fid,lid) in v])
-        print(f'{l}\t{k} {temp_d[5]}\t{files}')
-      print()
+  if not os.path.exists(args.html_dir):
+      os.makedirs(args.html_dir)
 
+  def page_head(title):
+    return f'<html><head><title>{title}</title></head><body><h1>{title}</h1>'
+
+  with open(f'{args.html_dir}/index.html', 'w') as findex:
+    print(page_head('CORD-19 Information Extraction Report')+'<ul>', file=findex)
+    for i, (temp_d, temp_rex, temp_rec, oie_rex, oie_rec) in enumerate(zip(temp_data, temp_regexes, temp_recounts, oie_regexes, oie_recounts)):
+      if temp_rex or oie_rex:
+        fname = f'report-{i}.html'
+        print(f'<li><a href="{fname}">{temp_d[2]}</a></li>', file=findex)
+        with open(f'{args.html_dir}/{fname}', 'w') as f:
+          print(page_head(temp_d[2]), file=f)
+          # TODO: Copied code here is not ideal, can we fix?
+          if temp_rex:
+            print('<h2>template results</h2><table>', file=f)
+            res = sorted(list(temp_rec.items()), key=lambda x: -len(x[1]))
+            for k, v in res:
+              l = len(v)
+              print(f'<tr><th>{k} {temp_d[5]} (count: {l})</th></tr>', file=f)
+              for fid, lid, text in v:
+                print(f'<tr><td colspan=2>{text}</td></tr>', file=f)
+            print('</table>', file=f)
+          if oie_rex:
+            print('<h2>information extraction results</h2><table>', file=f)
+            res = sorted(list(oie_rec.items()), key=lambda x: -len(x[1]))
+            for k, v in res:
+              l = len(v)
+              print(f'<tr><th>{k} {temp_d[5]} (count: {l})</th></tr>', file=f)
+              for fid, lid, text in v:
+                print(f'<tr><td colspan=2>{text}</td></tr>', file=f)
+            print('</table>', file=f)
+          print('</ul></body></html>', file=f)
+    print('</ul></body></html>', file=findex)
