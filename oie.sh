@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-inp_dir=text-only
+inp_dir=new-text-only
 threads=20
 
 set -e
@@ -18,8 +18,8 @@ do
     do
         fout=${spf}.oie
         flog=${spf}.log
-        echo "stanford_oie.py --inp $spf --out $fout"
-        python stanford_oie.py --inp $spf --out $fout &> $flog &
+        echo "oie/stanford_oie.py --inp $spf --out $fout"
+        python oie/stanford_oie.py --inp $spf --out $fout &> $flog &
     done
     wait
 
