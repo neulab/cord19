@@ -58,8 +58,10 @@ if __name__ == "__main__":
       regexes = [x.replace('[X]', v_regex).replace('[B]', '\\|\\|\\|') for (i,x) in enumerate(regexes)]
       regexes = '('+'|'.join(regexes)+')'
       oie_regexes.append( re.compile(regexes) )
-  temp_recounts = [defaultdict(lambda: []) for _ in temp_regexes]
-  oie_recounts = [defaultdict(lambda: []) for _ in oie_regexes]
+
+  # This is using a dictionary to store the results to de-duplicate lines
+  temp_recounts = [defaultdict(lambda: {}) for _ in temp_regexes]
+  oie_recounts = [defaultdict(lambda: {}) for _ in oie_regexes]
 
   # Process text
   lines = []
@@ -79,7 +81,7 @@ if __name__ == "__main__":
                 key = vals[0]
               else:
                 key = m.group(1)
-              temp_rec[key].append( (file_id,line_id,line) )
+              temp_rec[key][line] = (file_id,line_id)
 
   # Process oie
   lines = []
@@ -88,13 +90,20 @@ if __name__ == "__main__":
     with open(fname, 'r') as f, open(args.text_files[file_id], 'r') as ft:
       for line_id, (line, linet) in tqdm.tqdm(enumerate(zip(f, ft))):
         line = re.sub(oie_span_re,'',line)
-        for extraction in line.split('\t'):
-          for temp_id, (oie_rex, oie_rec) in enumerate(zip(oie_regexes, oie_recounts)):
-            if oie_rex:
+        extractions = line.split('\t')
+        for temp_id, (oie_rex, oie_rec) in enumerate(zip(oie_regexes, oie_recounts)):
+          if oie_rex:
+            # Use a heuristic of only keeping the shortest extraction that matches
+            best_extraction = None
+            for extraction in extractions:
               m = re.search(oie_rex, extraction)
               if m:
                 key = extraction.strip().replace('|||', ' ')
-                oie_rec[key].append( (file_id,line_id,linet) )
+                if not best_extraction or len(best_extraction[0]) > len(key):
+                  best_extraction = (key, linet, file_id, line_id)
+            if best_extraction:
+              (key, linet, file_id, line_id) = best_extraction
+              oie_rec[key][linet] = (file_id,line_id)
 
   if not os.path.exists(args.html_dir):
       os.makedirs(args.html_dir)
@@ -120,7 +129,7 @@ if __name__ == "__main__":
             for k, v in res:
               l = len(v)
               print(f'<tr><th>{k} {temp_d[5]} (count: {l})</th></tr>', file=f)
-              for fid, lid, text in v:
+              for text, (fid, lid) in v.items():
                 print(f'<tr><td colspan=2>{text}</td></tr>', file=f)
             print('</table>', file=f)
           if oie_rex:
@@ -129,7 +138,7 @@ if __name__ == "__main__":
             for k, v in res:
               l = len(v)
               print(f'<tr><th>{k} {temp_d[5]} (count: {l})</th></tr>', file=f)
-              for fid, lid, text in v:
+              for text, (fid, lid) in v.items():
                 print(f'<tr><td colspan=2>{text}</td></tr>', file=f)
             print('</table>', file=f)
           print('</ul></body></html>', file=f)
