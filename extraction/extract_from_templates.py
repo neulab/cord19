@@ -147,18 +147,20 @@ if __name__ == "__main__":
   shutil.copy2('lti.png', f'{args.html_dir}/lti.png')
 
   with open(f'{args.html_dir}/index.html', 'w') as findex:
-    print(page_head('CORD-19 Information Aggregator')+'<ul>', file=findex)
+    print(page_head('CORD-19 Information Aggregator'), file=findex)
     print('<p><div class="ref">by <a href="http://phontron.com">Graham Neubig</a>, '
           '<a href="https://people.cs.umass.edu/~strubell/">Emma Strubell</a>, '
           '<a href="http://jzb.vanpersie.cc">Zhengbao Jiang</a>, '
           '<a href="https://www.linkedin.com/in/zi-yi-dou-852a8710b/">Zi-Yi Dou</a> and others at the '
           '<a href="http://cmu.edu">Carnegie Mellon University</a> '
           '<a href="http://lti.cs.cmu.edu">Language Technologies Institute</a></div></p>', file=findex)
-    print('<p>This is a tool to browse answers the scientific literature may provide regarding various questions'
-          'about the novel coronavirus and COVID-19. Click the questions below to see a list of answers with'
+    print('<p>This is a tool to browse answers the scientific literature may provide regarding various questions '
+          'about the novel coronavirus and COVID-19. Click the questions below to see a list of answers with '
           'links to the sources that provided them.</p>'
-          '<p><b>We are looking for help improving this tool!</b> If you are familiar with reading the medical literature'
-          'and could give fine-grained feedback please contact us at <tt>gneubig@cs.cmu.edu</tt>.</p>', file=findex)
+          '<p><b>We are looking for help improving this tool!</b> If you are familiar with reading the medical literature '
+          'and could give fine-grained feedback please contact us at <tt>gneubig@cs.cmu.edu</tt>. If you want to '
+          'contribute to the code base you can do it through <a href="https://www.github.com/neulab/cord19">github</a>.</p>', file=findex)
+    print('<hline/><h2>Browse Questions</h2>', file=findex)
     num_results = [(len(text_recounts[i]) if text_recounts[i] else 0) + (len(oie_recounts[i]) if oie_recounts[i] else 0) for i in range(len(temp_data))]
     order = sorted(list(range(len(temp_data))), key=lambda i: -num_results[i])
     for i in order:
@@ -173,4 +175,6 @@ if __name__ == "__main__":
           print_results_table(f, 'Textual Template Results', text_rec, temp_d)
           print_results_table(f, 'Information Extraction Results', oie_rec, temp_d)
           print('</body></html>', file=f)
-    print('</ul><center><a href="http://lti.cs.cmu.edu"><img src="lti.png" height="100"></a></center></body></html>', file=findex)
+    print('</ul>', file=findex)
+    print('<hline/><p>Gratefully built on data from the <a href="https://www.kaggle.com/allen-institute-for-ai/CORD-19-research-challenge">CORD-19 dataset</a>.</p>', file=findex)
+    print('<center><a href="http://lti.cs.cmu.edu"><img src="lti.png" height="100"></a></center></body></html>', file=findex)
