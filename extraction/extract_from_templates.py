@@ -5,6 +5,7 @@ import re
 import shutil
 import sys
 import tqdm
+import json
 from collections import defaultdict
 
 virus_names = ['COVID-19', 'Wuhan coronavirus', 'Wuhan seafood market pneumonia virus', 'SARS2', 'coronavirus disease 2019', 'SARS-CoV-2', '2019-nCoV']
@@ -13,6 +14,27 @@ virus_names = ['COVID-19', 'Wuhan coronavirus', 'Wuhan seafood market pneumonia 
 #related_virus_names = ['betacoronaviruses', 'coronavirus', 'coronaviruses', 'PEDv', 'PEDV', 'coronaviridae', 'coronaviridae family', 'PED (virus)', 'MERS-CoV']
 
 oie_span_re = r'#[0-9]+,[0-9]+'
+
+def page_head(title):
+  return f'<html><head><link rel="stylesheet" type="text/css" href="main.css"><title>{title}</title></head><body><h1>{title}</h1>'
+
+metadata = {}
+def print_results_table(f, title, records, data):
+  if not records: return
+  print(f'<h2>{title}</h2><table>', file=f)
+  res = sorted(list(records.items()), key=lambda x: -len(x[1]))
+  for k, v in res:
+    l = len(v)
+    print(f'<tr><th>{k} {data[5]} (count: {l})</th></tr>', file=f)
+    for text, (fid, lid, sha) in v.items():
+      if sha in metadata:
+        md = metadata[sha]
+        source = md[10] if md[10] else md[1]
+        md_text = f'-- <a href="https://doi.org/{md[3]}"><b>{md[2]}</b></a>. {source}. {md[8]}.'
+      else:
+        md_text = '-- reference not found!'
+      print(f'<tr><td colspan=2>{text}<br/><div class="ref">{md_text}</div></td></tr>', file=f)
+  print('</table>', file=f)
 
 if __name__ == "__main__":
 
@@ -27,6 +49,12 @@ if __name__ == "__main__":
   args = parser.parse_args()
   if args.oie_files and len(args.oie_files) != len(args.text_files):
     raise ValueError('Lengths of the args.oie_files and args.text_files arguments must be the same')
+
+  with open(f'{args.raw_data_dir}/metadata.csv', 'r') as f:
+    csvf = csv.reader(f)
+    text_header = next(csvf)
+    for line in csvf:
+      metadata[line[0]] = line
 
   with open(args.template_file, 'r') as f:
     csvf = csv.reader(f)
@@ -67,14 +95,16 @@ if __name__ == "__main__":
   text_recounts = [defaultdict(lambda: {}) for _ in text_regexes]
   oie_recounts = [defaultdict(lambda: {}) for _ in oie_regexes]
 
-  # Process text
+  json_data = {}
+
+  # Process text and OIE extractions
   lines = []
   for file_id, (text_fname, oie_fname) in enumerate(zip(args.text_files, args.oie_files)):
     print(f'Processing {text_fname} and {oie_fname}', file=sys.stderr)
     with open(text_fname, 'r') as text_f, open(oie_fname, 'r') as oie_f:
       for line_id, (text_line, oie_line) in tqdm.tqdm(enumerate(zip(text_f, oie_f))):
         text_split = text_line.split('\t')
-        json_fname = args.raw_data_dir+text_split[0].replace('new_raw_data', '') # a little hacky
+        sha_hash = text_split[0].split('/')[-1][:-5]
         text_line = '\t'.join(text_split[1:])
         extractions = re.sub(oie_span_re, '', oie_line).split('\t')[1:]
         for text_id, (text_rex, text_rec, oie_rex, oie_rec) in enumerate(zip(text_regexes, text_recounts, oie_regexes, oie_recounts)):
@@ -89,7 +119,7 @@ if __name__ == "__main__":
                 key = vals[0]
               else:
                 key = m.group(1)
-              text_rec[key][text_line] = (file_id,line_id)
+              text_rec[key][text_line] = (file_id,line_id,sha_hash)
           if oie_rex:
             # Use a heuristic of only keeping the shortest extraction that matches
             best_extraction = None
@@ -101,29 +131,22 @@ if __name__ == "__main__":
                   best_extraction = (key, text_line, file_id, line_id)
             if best_extraction:
               (key, linet, file_id, line_id) = best_extraction
-              oie_rec[key][linet] = (file_id,line_id)
+              oie_rec[key][linet] = (file_id,line_id,sha_hash)
 
   if not os.path.exists(args.html_dir):
       os.makedirs(args.html_dir)
   shutil.copy2('main.css', f'{args.html_dir}/main.css')
 
-  def page_head(title):
-    return f'<html><head><link rel="stylesheet" type="text/css" href="main.css"><title>{title}</title></head><body><h1>{title}</h1>'
-
-  def print_results_table(f, title, records, data):
-    if not records: return
-    print(f'<h2>{title}</h2><table>', file=f)
-    res = sorted(list(records.items()), key=lambda x: -len(x[1]))
-    for k, v in res:
-      l = len(v)
-      print(f'<tr><th>{k} {data[5]} (count: {l})</th></tr>', file=f)
-      for text in v.keys():
-        print(f'<tr><td colspan=2>{text}</td></tr>', file=f)
-    print('</table>', file=f)
-
-
   with open(f'{args.html_dir}/index.html', 'w') as findex:
-    print(page_head('CORD-19 Information Extraction Report')+'<ul>', file=findex)
+    print(page_head('CORD-19 Information Aggregator')+'<ul>', file=findex)
+    print('<p>by <a href="http://phontron.com">Graham Neubig</a>, '
+          '<a href="https://people.cs.umass.edu/~strubell/">Emma Strubell</a>, '
+          '<a href="http://jzb.vanpersie.cc">Zhengbao Jiang</a>, '
+          '<a href="https://www.linkedin.com/in/zi-yi-dou-852a8710b/">Zi-Yi Dou</a> and others at the '
+          '<a href="http://cmu.edu">Carnegie Mellon University</a> '
+          '<a href="http://lti.cs.cmu.edu">Language Technologies Institute</a></p>', file=findex)
+    print('<p><b>We are looking for help improving this tool!</b> If you are familiar with reading the medical literature'
+          'and could give fine-grained feedback please contact us at <tt>gneubig@cs.cmu.edu</tt>.</p>', file=findex)
     for i, (temp_d, text_rex, text_rec, oie_rex, oie_rec) in enumerate(zip(temp_data, text_regexes, text_recounts, oie_regexes, oie_recounts)):
       if text_rex or oie_rex:
         fname = f'report-{i}.html'

@@ -9,15 +9,24 @@ contagious [Y] days.*[X]",days,yonly
 [X].*season",,,
 "568: transmission, incubation, and environmental stability","Physical science of the coronavirus (e.g., charge distribution, adhesion to hydrophilic/phobic surfaces, environmental survival to inform decontamination efforts for affected areas and provide information about viral shedding).",,,,,
 "568: transmission, incubation, and environmental stability","Persistence and stability on a multitude of substrates and sources (e.g., nasal discharge, sputum, urine, fecal matter, blood).",,,,,
-"568: transmission, incubation, and environmental stability","Persistence of virus on surfaces of different materials (e,g., copper, stainless steel, plastic).",,,,,
+"568: transmission, incubation, and environmental stability","Persistence of virus on surfaces of different materials (e,g., copper, stainless steel, plastic).",Survival on surfaces?,,"[X],? can survive on [Y] for",,
 "568: transmission, incubation, and environmental stability",Natural history of the virus and shedding of it from an infected person,,,,,
 "568: transmission, incubation, and environmental stability",Implementation of diagnostics and products to improve clinical processes,,,,,
 "568: transmission, incubation, and environmental stability","Disease models, including animal models for infection, disease and transmission",,,,,
-"568: transmission, incubation, and environmental stability",Tools and studies to monitor phenotypic change and potential adaptation of the virus,,,,,
+"568: transmission, incubation, and environmental stability",Tools and studies to monitor phenotypic change and potential adaptation of the virus （用于监测病毒表型变化和潜在适应的工具和研究）,,,,,
 "568: transmission, incubation, and environmental stability",Immune response and immunity,,,,,
 "568: transmission, incubation, and environmental stability",Effectiveness of movement control strategies to prevent secondary transmission in health care and community settings,,,,,
 "568: transmission, incubation, and environmental stability",Effectiveness of personal protective equipment (PPE) and its usefulness to reduce risk of transmission in health care and community settings,,,,,
-"568: transmission, incubation, and environmental stability",Role of the environment in transmission,,,,,
+,Role of the environment in transmission,Environmental survival conditions?,,"[Y] have been shown to enhance [X] survivability outside
+[Y] which were optimal for [X] to survive on",,
+"568: transmission, incubation, and environmental stability",Role of the environment in transmission,Environmental survival time?,,"[X] can survive [Y] outside the host
+[X] can survive on .* for [Y]
+[X] is able to survive [Y] outside the host
+[X] have been found to survive in environments outside the body [Y]
+[X] has been found to survive in environments outside the body [Y]
+[X],? can survive on .* surfaces [Y]
+[X] have the capacity to survive on .* surfaces [Y]
+[X] has the capacity to survive on .* surfaces [Y]",,
 558: risk factors,"Data on potential risks factors: Smoking, pre-existing pulmonary disease",What are risk factors?,,"[Y] is a .* risk factor for [X]
 [Y] is associated with [X]
 [Y] is a risk factor for .* in [X] patients",,
