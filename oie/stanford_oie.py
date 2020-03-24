@@ -19,6 +19,13 @@ nlp = spacy.load('en_core_web_sm')
 stopwords = nlp.Defaults.stop_words
 
 
+def get_triple_len(triple: Triple):
+    l = triple.subject.end - triple.subject.start + \
+        triple.relation.end - triple.relation.start + \
+        triple.object.end - triple.object.start
+    return l
+
+
 def span_to_str(span: Span):
     return '{}#{},{}'.format(span.text, span.start, span.end)
 
@@ -73,9 +80,10 @@ class StanfordOpenIE:
                     new_triple[field] = Span(text=text, start=s, end=e)
                 key = '\t'.join(['{}-{}'.format(new_triple[field].start, new_triple[field].end)
                                  for field in ['subject', 'relation', 'object']])
-                if remove_dup and key not in dup:
-                    triples.append(Triple(**new_triple))
-                    dup.add(key)
+                if remove_dup and key in dup:
+                    continue
+                triples.append(Triple(**new_triple))
+                dup.add(key)
         return triples
 
     def annotate(self,
@@ -130,7 +138,7 @@ def filter_relation(relation: str):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='run open ie on a text file')
-    parser.add_argument('--task', type=str, choices=['run', 'ana'], default='run')
+    parser.add_argument('--task', type=str, choices=['run', 'filter', 'ana'], default='run')
     parser.add_argument('--inp', type=str, help='input file')
     parser.add_argument('--out', type=str, help='output file')
     parser.add_argument('--threads', type=int, help='number of threads for standford nlp', default=5)
@@ -146,8 +154,17 @@ if __name__ == '__main__':
         with open(args.inp, 'r') as fin, open(args.out, 'w') as fout, \
                 StanfordOpenIE(threads=args.threads, close_after_finish=True) as client:
             for lid, line in tqdm(enumerate(fin)):
-                triples = client.annotate(line, remove_dup=True)
-                fout.write(triples_to_str(triples) + '\n')
+                id, text = line.strip().split('\t')
+                triples = client.annotate(text, remove_dup=False)
+                fout.write('{}\t{}\n'.format(id, triples_to_str(triples)))
+
+    elif args.task == 'filter':
+        with open(args.inp, 'r') as fin, open(args.out, 'w') as fout:
+            for l in fin:
+                id, text = l.rstrip('\n').split('\t', 1)
+                triples = sorted(str_to_triples(text), key=lambda t: get_triple_len(t))
+                fout.write('{}\t{}\n'.format(id, triples_to_str(triples[:1])))
+
     elif args.task == 'ana':
         relation2count = defaultdict(lambda: 0)
         with open(args.inp, 'r') as fin:
