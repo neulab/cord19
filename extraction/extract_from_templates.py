@@ -9,6 +9,9 @@ from collections import defaultdict
 
 virus_names = ['COVID-19', 'Wuhan coronavirus', 'Wuhan seafood market pneumonia virus', 'SARS2', 'coronavirus disease 2019', 'SARS-CoV-2', '2019-nCoV']
 
+# todo: for future use
+#related_virus_names = ['betacoronaviruses', 'coronavirus', 'coronaviruses', 'PEDv', 'PEDV', 'coronaviridae', 'coronaviridae family', 'PED (virus)', 'MERS-CoV']
+
 oie_span_re = r'#[0-9]+,[0-9]+'
 
 if __name__ == "__main__":
