@@ -24,7 +24,7 @@ contagious [Y] days.*[X]",days,yonly
 558: risk factors,Data on potential risks factors: Co-infections (determine whether co-existing respiratory/viral infections make the virus more transmissible or virulent) and other co-morbidities,,,,,
 558: risk factors,Data on potential risks factors: Neonates and pregnant women,What is the risk for neonates and pregnant women?,,[X] poses [Y] risk (in|for) (pregnant women|neonates),,
 558: risk factors,Data on potential risks factors: Socio-economic and behavioral factors to understand the economic impact of the virus and whether there were differences.,,,,,
-558: risk factors,"Transmission dynamics of the virus, including the basic reproductive number, incubation period, serial interval, modes of transmission and environmental factors",What is the basic reproductive number?,,"The basic reproductive number of [X] is [Y]
+558: risk factors,"Transmission dynamics of the virus, including the basic reproductive number, incubation period, serial interval, modes of transmission and environmental factors",What is the basic reproductive number?,,"basic reproductive number of [X] is [Y]
 [X] has a basic reproductive number of [Y]
 The R 0 of [X] is [Y]
 [X] has a R 0 of [Y]
