@@ -79,6 +79,7 @@ if __name__ == "__main__":
   # Create regexes
   text_regexes, oie_regexes = [], []
   v_regex = '('+'|'.join(virus_names)+')'
+  v_reg_comp = re.compile(v_regex)
   for i, my_data in enumerate(temp_data):
     # Text extraction
     orig_regexes = my_data[4].split('\n')
@@ -111,6 +112,7 @@ if __name__ == "__main__":
     print(f'Processing {text_fname} and {oie_fname}', file=sys.stderr)
     with open(text_fname, 'r') as text_f, open(oie_fname, 'r') as oie_f:
       for line_id, (text_line, oie_line) in tqdm.tqdm(enumerate(zip(text_f, oie_f))):
+        if not re.search(v_reg_comp, text_line): continue
         text_split = text_line.split('\t')
         sha_hash = text_split[0].split('/')[-1][:-5]
         text_line = '\t'.join(text_split[1:])
