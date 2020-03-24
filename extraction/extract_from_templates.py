@@ -24,8 +24,8 @@ def get_regexes(regex_str):
     if '[X]' in r:
       regexes.append(r)
     elif r:
-      regexes.append(f'[X].*r')
-      regexes.append(f'r.*[X]')
+      regexes.append(f'[X].*{r}')
+      regexes.append(f'{r}.*[X]')
   return regexes
 
 def page_head(title):
@@ -160,7 +160,7 @@ if __name__ == "__main__":
           '<p><b>We are looking for help improving this tool!</b> If you are familiar with reading the medical literature '
           'and could give fine-grained feedback please contact us at <tt>gneubig@cs.cmu.edu</tt>. If you want to '
           'contribute to the code base you can do it through <a href="https://www.github.com/neulab/cord19">github</a>.</p>', file=findex)
-    print('<hline/><h2>Browse Questions</h2>', file=findex)
+    print('<hr/><h2>Browse Questions</h2>', file=findex)
     num_results = [(len(text_recounts[i]) if text_recounts[i] else 0) + (len(oie_recounts[i]) if oie_recounts[i] else 0) for i in range(len(temp_data))]
     order = sorted(list(range(len(temp_data))), key=lambda i: -num_results[i])
     for i in order:
@@ -176,5 +176,5 @@ if __name__ == "__main__":
           print_results_table(f, 'Information Extraction Results', oie_rec, temp_d)
           print('</body></html>', file=f)
     print('</ul>', file=findex)
-    print('<hline/><p>Gratefully built on data from the <a href="https://www.kaggle.com/allen-institute-for-ai/CORD-19-research-challenge">CORD-19 dataset</a>.</p>', file=findex)
+    print('<hr/><p>Gratefully built on data from the <a href="https://www.kaggle.com/allen-institute-for-ai/CORD-19-research-challenge">CORD-19 dataset</a>.</p>', file=findex)
     print('<center><a href="http://lti.cs.cmu.edu"><img src="lti.png" height="100"></a></center></body></html>', file=findex)
