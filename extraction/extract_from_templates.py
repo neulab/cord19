@@ -139,13 +139,16 @@ if __name__ == "__main__":
 
   with open(f'{args.html_dir}/index.html', 'w') as findex:
     print(page_head('CORD-19 Information Aggregator')+'<ul>', file=findex)
-    print('<p>by <a href="http://phontron.com">Graham Neubig</a>, '
+    print('<p><div class="ref">by <a href="http://phontron.com">Graham Neubig</a>, '
           '<a href="https://people.cs.umass.edu/~strubell/">Emma Strubell</a>, '
           '<a href="http://jzb.vanpersie.cc">Zhengbao Jiang</a>, '
           '<a href="https://www.linkedin.com/in/zi-yi-dou-852a8710b/">Zi-Yi Dou</a> and others at the '
           '<a href="http://cmu.edu">Carnegie Mellon University</a> '
-          '<a href="http://lti.cs.cmu.edu">Language Technologies Institute</a></p>', file=findex)
-    print('<p><b>We are looking for help improving this tool!</b> If you are familiar with reading the medical literature'
+          '<a href="http://lti.cs.cmu.edu">Language Technologies Institute</a></div></p>', file=findex)
+    print('<p>This is a tool to browse answers the scientific literature may provide regarding various questions'
+          'about the novel coronavirus and COVID-19. Click the questions below to see a list of answers with'
+          'links to the sources that provided them.</p>'
+          '<p><b>We are looking for help improving this tool!</b> If you are familiar with reading the medical literature'
           'and could give fine-grained feedback please contact us at <tt>gneubig@cs.cmu.edu</tt>.</p>', file=findex)
     for i, (temp_d, text_rex, text_rec, oie_rex, oie_rec) in enumerate(zip(temp_data, text_regexes, text_recounts, oie_regexes, oie_recounts)):
       if text_rex or oie_rex:
