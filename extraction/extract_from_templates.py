@@ -15,6 +15,19 @@ virus_names = ['COVID-19', 'Wuhan coronavirus', 'Wuhan seafood market pneumonia 
 
 oie_span_re = r'#[0-9]+,[0-9]+'
 
+def get_regexes(regex_str):
+  regexes = []
+  for r in regex_str.split('\n'):
+    if r.startswith('[Y]') or r.endswith('[Y]'):
+      print(f'regex "{r}" should not start or end with [Y]', file=sys.stderr)
+      continue
+    if '[X]' in r:
+      regexes.append(r)
+    elif r:
+      regexes.append(f'[X].*r')
+      regexes.append(f'r.*[X]')
+  return regexes
+
 def page_head(title):
   return f'<html><head><link rel="stylesheet" type="text/css" href="main.css"><title>{title}</title></head><body><h1>{title}</h1>'
 
@@ -69,12 +82,7 @@ if __name__ == "__main__":
   for i, my_data in enumerate(temp_data):
     # Text extraction
     orig_regexes = my_data[4].split('\n')
-    regexes = []
-    for x in orig_regexes:
-      if x.startswith('[Y]') or x.endswith('[Y]'):
-        print(f'regex "{x}" should not start or end with [Y]', file=sys.stderr)
-      elif len(x):
-        regexes.append(x)
+    regexes = get_regexes(my_data[4])
     if not len(regexes):
       text_regexes.append(None)
     else:
@@ -83,7 +91,7 @@ if __name__ == "__main__":
       regexes = '('+'|'.join(regexes)+')'
       text_regexes.append( (re.compile(regexes), regex_cnt, my_data[6]) )
     # OIE regexes
-    regexes = my_data[3].split('\n')
+    regexes = get_regexes(my_data[3])
     if not len(regexes) or not len(regexes[0]):
       oie_regexes.append(None)
     else:
@@ -136,6 +144,7 @@ if __name__ == "__main__":
   if not os.path.exists(args.html_dir):
       os.makedirs(args.html_dir)
   shutil.copy2('main.css', f'{args.html_dir}/main.css')
+  shutil.copy2('lti.png', f'{args.html_dir}/lti.png')
 
   with open(f'{args.html_dir}/index.html', 'w') as findex:
     print(page_head('CORD-19 Information Aggregator')+'<ul>', file=findex)
@@ -150,7 +159,10 @@ if __name__ == "__main__":
           'links to the sources that provided them.</p>'
           '<p><b>We are looking for help improving this tool!</b> If you are familiar with reading the medical literature'
           'and could give fine-grained feedback please contact us at <tt>gneubig@cs.cmu.edu</tt>.</p>', file=findex)
-    for i, (temp_d, text_rex, text_rec, oie_rex, oie_rec) in enumerate(zip(temp_data, text_regexes, text_recounts, oie_regexes, oie_recounts)):
+    num_results = [(len(text_recounts[i]) if text_recounts[i] else 0) + (len(oie_recounts[i]) if oie_recounts[i] else 0) for i in range(len(temp_data))]
+    order = sorted(list(range(len(temp_data))), key=lambda i: -num_results[i])
+    for i in order:
+      temp_d, text_rex, text_rec, oie_rex, oie_rec = [x[i] for x in (temp_data, text_regexes, text_recounts, oie_regexes, oie_recounts)]
       if text_rex or oie_rex:
         fname = f'report-{i}.html'
         l = (len(text_rec) if text_rec else 0) + (len(oie_rec) if oie_rec else 0)
@@ -161,4 +173,4 @@ if __name__ == "__main__":
           print_results_table(f, 'Textual Template Results', text_rec, temp_d)
           print_results_table(f, 'Information Extraction Results', oie_rec, temp_d)
           print('</body></html>', file=f)
-    print('</ul></body></html>', file=findex)
+    print('</ul><center><a href="http://lti.cs.cmu.edu"><img src="lti.png" height="100"></a></center></body></html>', file=findex)
