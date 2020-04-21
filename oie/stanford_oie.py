@@ -160,7 +160,7 @@ if __name__ == '__main__':
 
     elif args.task == 'filter':
         with open(args.inp, 'r') as fin, open(args.out, 'w') as fout:
-            for l in fin:
+            for l in tqdm(fin):
                 id, text = l.rstrip('\n').split('\t', 1)
                 triples = sorted(str_to_triples(text), key=lambda t: get_triple_len(t))
                 fout.write('{}\t{}\n'.format(id, triples_to_str(triples[:1])))

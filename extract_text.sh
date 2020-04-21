@@ -14,5 +14,5 @@ done
 mkdir -p new-text-only
 for dir in biorxiv_medrxiv comm_use_subset noncomm_use_subset custom_license; do
     echo ${dir}
-    python sentence_seg.py new_raw_data/${dir} new-text-only/${dir}.txt new-text-only/${dir}.sent
+    python sentence_seg.py new_raw_data/${dir}/${dir}/pdf_json new-text-only/${dir}.txt new-text-only/${dir}.sent
 done
