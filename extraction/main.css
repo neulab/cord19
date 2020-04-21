@@ -1,6 +1,28 @@
 
-h1, h2, p, td, th, li, a {
+h1, h2, p, td, th, li, a, div {
   font-family: 'Arial', sans-serif;
+}
+
+a:link {
+  color: #600; 
+  background-color: transparent; 
+  text-decoration: none;
+}
+
+a:visited {
+  color: #555;
+  background-color: transparent;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #600;
+  background-color: transparent;
+  text-decoration: underline;
+}
+
+div.ref {
+  font-size: 80%;
 }
 
 /* Center tables for demo */

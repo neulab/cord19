@@ -4,47 +4,74 @@ Task,Sub-task,Specific Question,"Regexes over OpenIE Templates ([X] is disease, 
 [X] .* incubation period of [Y] days",days,yonly
 "568: transmission, incubation, and environmental stability","Range of incubation periods for the disease in humans (and how this varies across age and health status) and how long individuals are contagious, even after recovery.",How long individuals are contagious?,,"[X].* contagious [Y] days
 contagious [Y] days.*[X]",days,yonly
-"568: transmission, incubation, and environmental stability","Prevalence of asymptomatic shedding and transmission (e.g., particularly children).",,,,,
-"568: transmission, incubation, and environmental stability",Seasonality of transmission.,What is the seasonality of transmission?,"season.*[X]
-[X].*season",,,
-"568: transmission, incubation, and environmental stability","Physical science of the coronavirus (e.g., charge distribution, adhesion to hydrophilic/phobic surfaces, environmental survival to inform decontamination efforts for affected areas and provide information about viral shedding).",,,,,
+"568: transmission, incubation, and environmental stability","Prevalence of asymptomatic shedding and transmission (e.g., particularly children).",Asymptomatic shedding of COVID-19?,asymptomatic.*shed,,,
+"568: transmission, incubation, and environmental stability",Seasonality of transmission.,What is the seasonality of transmission?,season,,,
+"568: transmission, incubation, and environmental stability","Physical science of the coronavirus (e.g., charge distribution, adhesion to hydrophilic/phobic surfaces, environmental survival to inform decontamination efforts for affected areas and provide information about viral shedding).",Adhesion to various surfaces?,adhesion,,,
 "568: transmission, incubation, and environmental stability","Persistence and stability on a multitude of substrates and sources (e.g., nasal discharge, sputum, urine, fecal matter, blood).",,,,,
-"568: transmission, incubation, and environmental stability","Persistence of virus on surfaces of different materials (e,g., copper, stainless steel, plastic).",,,,,
+"568: transmission, incubation, and environmental stability","Persistence of virus on surfaces of different materials (e,g., copper, stainless steel, plastic).",Survival on surfaces?,"survived on
+survives in
+survives differently in
+typically survives in","[X],? can survive on [Y] for",,
 "568: transmission, incubation, and environmental stability",Natural history of the virus and shedding of it from an infected person,,,,,
-"568: transmission, incubation, and environmental stability",Implementation of diagnostics and products to improve clinical processes,,,,,
+"568: transmission, incubation, and environmental stability",Implementation of diagnostics and products to improve clinical processes,What are diagnostics?,diagnostics,,,
 "568: transmission, incubation, and environmental stability","Disease models, including animal models for infection, disease and transmission",,,,,
-"568: transmission, incubation, and environmental stability",Tools and studies to monitor phenotypic change and potential adaptation of the virus,,,,,
-"568: transmission, incubation, and environmental stability",Immune response and immunity,,,,,
-"568: transmission, incubation, and environmental stability",Effectiveness of movement control strategies to prevent secondary transmission in health care and community settings,,,,,
-"568: transmission, incubation, and environmental stability",Effectiveness of personal protective equipment (PPE) and its usefulness to reduce risk of transmission in health care and community settings,,,,,
-"568: transmission, incubation, and environmental stability",Role of the environment in transmission,,,,,
+"568: transmission, incubation, and environmental stability",Tools and studies to monitor phenotypic change and potential adaptation of the virus （用于监测病毒表型变化和潜在适应的工具和研究）,,,,,
+"568: transmission, incubation, and environmental stability",Immune response and immunity,What are characteristics of immune response?,immune response,,,
+"568: transmission, incubation, and environmental stability",Effectiveness of movement control strategies to prevent secondary transmission in health care and community settings,What is the relationship with movement control?,movement control,,,
+"568: transmission, incubation, and environmental stability",Effectiveness of personal protective equipment (PPE) and its usefulness to reduce risk of transmission in health care and community settings,What is the effect of personal protective equipment?,"personal protective equipment
+PPE",,,
+,Role of the environment in transmission,What are environmental survival conditions?,,"[Y] have been shown to enhance [X] survivability outside
+[Y] which were optimal for [X] to survive on",,
+"568: transmission, incubation, and environmental stability",Role of the environment in transmission,What is the environmental survival time?,survived for,"[X] can survive [Y] outside the host
+[X] can survive on .* for [Y]
+[X] is able to survive [Y] outside the host
+[X] (have|has) been found to survive in environments outside the body [Y]
+[X],? can survive on .* surfaces [Y]
+[X] (have|has) the capacity to survive on .* surfaces [Y]",,
 558: risk factors,"Data on potential risks factors: Smoking, pre-existing pulmonary disease",What are risk factors?,,"[Y] is a .* risk factor for [X]
 [Y] is associated with [X]
 [Y] is a risk factor for .* in [X] patients",,
-558: risk factors,Data on potential risks factors: Co-infections (determine whether co-existing respiratory/viral infections make the virus more transmissible or virulent) and other co-morbidities,,,,,
+558: risk factors,Data on potential risks factors: Co-infections (determine whether co-existing respiratory/viral infections make the virus more transmissible or virulent) and other co-morbidities,What happens with co-infections?,co-infection,,,
 558: risk factors,Data on potential risks factors: Neonates and pregnant women,What is the risk for neonates and pregnant women?,,[X] poses [Y] risk (in|for) (pregnant women|neonates),,
 558: risk factors,Data on potential risks factors: Socio-economic and behavioral factors to understand the economic impact of the virus and whether there were differences.,,,,,
-558: risk factors,"Transmission dynamics of the virus, including the basic reproductive number, incubation period, serial interval, modes of transmission and environmental factors",What is the basic reproductive number?,,"The basic reproductive number of [X] is [Y]
+558: risk factors,"Transmission dynamics of the virus, including the basic reproductive number, incubation period, serial interval, modes of transmission and environmental factors",What is the basic reproductive number?,basic reproductive number,"basic reproductive number of [X] is [Y]
 [X] has a basic reproductive number of [Y]
 The R 0 of [X] is [Y]
 [X] has a R 0 of [Y]
 ",,
 558: risk factors,"Severity of disease, including risk of fatality among symptomatic hospitalized patients, and high-risk patient groups",,,,,
 558: risk factors,Susceptibility of populations,,,,,
-558: risk factors,Public health mitigation measures that could be effective for control,,,,,
+558: risk factors,Public health mitigation measures that could be effective for control,What are potentially effective mitigation measures?,mitigation measures,,,
 "567: genetics, origin, evolution",Real-time tracking of whole genomes and a mechanism for coordinating the rapid dissemination of that information to inform the development of diagnostics and therapeutics and to track variations of the virus over time.,,,,,
 "567: genetics, origin, evolution","Access to geographic and temporal diverse sample sets to understand geographic distribution and genomic differences, and determine whether there is more than one strain in circulation. Multi-lateral agreements such as the Nagoya Protocol could be leveraged.",,,,,
-"567: genetics, origin, evolution","Evidence that livestock could be infected (e.g., field surveillance, genetic sequencing, receptor binding) and serve as a reservoir after the epidemic appears to be over.",,,,,
-"567: genetics, origin, evolution","Evidence of whether farmers are infected, and whether farmers could have played a role in the origin.",,,,,
+"567: genetics, origin, evolution","Evidence that livestock could be infected (e.g., field surveillance, genetic sequencing, receptor binding) and serve as a reservoir after the epidemic appears to be over.",What evidence is there that livestock could be infected?,livestock,,,
+"567: genetics, origin, evolution","Evidence of whether farmers are infected, and whether farmers could have played a role in the origin.",What evidence is there that farmers could be infected?,farmers,,,
 "567: genetics, origin, evolution",Surveillance of mixed wildlife- livestock farms for SARS-CoV-2 and other coronaviruses in Southeast Asia.,,,,,
 "567: genetics, origin, evolution",Experimental infections to test host range for this pathogen.,,,,,
-"567: genetics, origin, evolution",Animal host(s) and any evidence of continued spill-over to humans,,,,,
-"567: genetics, origin, evolution",Socioeconomic and behavioral risk factors for this spill-over,,,,,
+"567: genetics, origin, evolution",Animal host(s) and any evidence of continued spill-over to humans,What is known about animal hosts?,animal host,,,
+"567: genetics, origin, evolution",Socioeconomic and behavioral risk factors for this spill-over,What are socioeconomic and behavioral risk factors?,"socioeconomic
+behavioral",,,
 "567: genetics, origin, evolution",Sustainable risk reduction strategies,,,,,
-536: geography,Are there geographic variations in the rate of COVID-19 spread?,,,,,
-536: geography,Are there geographic variations in the mortality rate of COVID-19?,,,,,
+536: geography,Are there geographic variations in the rate of COVID-19 spread?,Are there geographic variations in the rate of COVID-19 spread?,geographic.*spread,,,
+536: geography,Are there geographic variations in the mortality rate of COVID-19?,Are there geographic variations in the mortality rate of COVID-19?,geographic.*mortality,,,
 536: geography,Is there any evidence to suggest geographic based virus mutations?,,,,,
-561: vaccines and theraputics,Effectiveness of drugs being developed and tried to treat COVID-19 patients.,,,,,
+561: vaccines and theraputics,Effectiveness of drugs being developed and tried to treat COVID-19 patients.,What treatments are being developed for COVID-19?,"effective for treatment
+used for treatment
+results in treatment
+have effect in treatment
+recommend .* as treatment
+recommend.* for treatment
+used in treatment of
+data support .* treatment
+treatment strategies .* relevant for
+utility .* in treatment
+efficacy .* in treatment
+treatment reduced
+treatment .* beneficial for
+be treatment for
+potential .* treatment (for|of)
+promising for treatment
+is treatment for",,,
 561: vaccines and theraputics,"Clinical and bench trials to investigate less common viral inhibitors against COVID-19 such as naproxen, clarithromycin, and minocyclinethat that may exert effects on viral replication.",,,,,
 561: vaccines and theraputics,Methods evaluating potential complication of Antibody-Dependent Enhancement (ADE) in vaccine recipients.,,,,,
 561: vaccines and theraputics,Exploration of use of best animal models and their predictive value for a human vaccine.,,,,,
